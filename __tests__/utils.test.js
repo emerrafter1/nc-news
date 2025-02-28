@@ -1,5 +1,6 @@
 const {
-  convertTimestampToDate
+  convertTimestampToDate,
+  createLookupObject,
 } = require("../db/seeds/utils");
 
 describe("convertTimestampToDate", () => {
@@ -38,3 +39,111 @@ describe("convertTimestampToDate", () => {
   });
 });
 
+describe("createLookupObject", () => {
+  test("Function returns an object", () => {
+    const inputData = [
+      {
+        article_id: 1,
+        title: "Running a Node App",
+        topic: "coding",
+        author: "jessjelly",
+        body: "This is part two of a series on how to get up and running with Systemd and Node.js. This part dives deeper into how to successfully run your app with systemd long-term, and how to set it up in a production environment.",
+        created_at: 1604728980000,
+        votes: 0,
+        article_img_url:
+          "https://images.pexels.com/photos/11035380/pexels-photo-11035380.jpeg?w=700&h=700",
+      },
+    ];
+
+    const actual = createLookupObject(inputData, "title", "article_id");
+
+    expect(typeof actual).toBe("object");
+  });
+
+  test("Function returns a lookup object with a single key value pair with the targetKey and targetValue for a single  data object", () => {
+    const inputData = [
+      {
+        article_id: 1,
+        title: "Running a Node App",
+        topic: "coding",
+        author: "jessjelly",
+        body: "This is part two of a series on how to get up and running with Systemd and Node.js. This part dives deeper into how to successfully run your app with systemd long-term, and how to set it up in a production environment.",
+        created_at: 1604728980000,
+        votes: 0,
+        article_img_url:
+          "https://images.pexels.com/photos/11035380/pexels-photo-11035380.jpeg?w=700&h=700",
+      },
+    ];
+
+    const expected = { "Running a Node App": 1 };
+
+    const actual = createLookupObject(inputData, "title", "article_id");
+
+    expect(actual).toEqual(expected);
+  });
+
+  test(
+    "Function returns a lookup object multiple key value pairs for multiple data objects",
+    () => {
+      const inputData = [
+        {
+          article_id: 1,
+          title: "Moustache",
+          topic: "mitch",
+          author: "butter_bridge",
+          body: "Have you seen the size of that thing?",
+          created_at: 1602419040000,
+          article_img_url:
+            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+        },
+        {
+          article_id: 2,
+          title: "Another article about Mitch",
+          topic: "mitch",
+          author: "butter_bridge",
+          body: "There will never be enough articles about Mitch!",
+          created_at: 1602419040000,
+          article_img_url:
+            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+        },
+      ];
+
+      const expected = {"Moustache": 1, "Another article about Mitch": 2}
+
+      const actual = createLookupObject(inputData, "title", "article_id")
+
+      expect(actual).toEqual(expected)
+    }
+  );
+
+  test("Function does not mutate the input data", () => {
+    const inputData = [
+      {
+        article_id: 1,
+        title: "Moustache",
+        topic: "mitch",
+        author: "butter_bridge",
+        body: "Have you seen the size of that thing?",
+        created_at: 1602419040000,
+        article_img_url:
+          "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+      },
+      {
+        article_id: 2,
+        title: "Another article about Mitch",
+        topic: "mitch",
+        author: "butter_bridge",
+        body: "There will never be enough articles about Mitch!",
+        created_at: 1602419040000,
+        article_img_url:
+          "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+      },
+    ];
+
+    const expected = {"Moustache": 1, "Another article about Mitch": 2}
+
+    const actual = createLookupObject(inputData, "title", "article_id")
+
+    expect(actual).not.toBe(expected)
+  });
+});
