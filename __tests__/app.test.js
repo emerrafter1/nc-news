@@ -23,8 +23,19 @@ describe("GET /api", () => {
   });
 });
 
+describe("ANY: /notapath", () => {
+  test("404: responds with error message when path is not found", () => {
+    return request(app)
+      .get("/notapath")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("path not found");
+      });
+  });
+});
+
 describe("GET /api/topics", () => {
-  test("200: Responds with an object detailing all the topics", () => {
+  test("200: Responds with an object detailing the slug and description of all the topics", () => {
     return request(app)
       .get("/api/topics")
       .expect(200)
