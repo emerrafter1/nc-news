@@ -9,5 +9,5 @@
 
 Note: this is for the purpose of running the code only, in a real world example this information would be kept private due to it's senstivity
 
-2. Run npm install to install all relevant npm packages
+2. Run `npm install` to install all relevant npm packages
 
