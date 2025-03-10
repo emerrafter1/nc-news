@@ -76,7 +76,7 @@ describe("GET /api/articles/:articleId", () => {
         expect(body.msg).toBe("Bad request");
       });
   });
-  test("400: Responds with not found when an valid request is made but the record does not exist", () => {
+  test("400: Responds with not found when a valid request is made but the record does not exist", () => {
     return request(app)
       .get("/api/articles/799")
       .expect(404)
