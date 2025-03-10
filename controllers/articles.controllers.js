@@ -4,9 +4,13 @@ const {
 } = require("../models/articles.models");
 
 function getArticles(request, response, next) {
-  fetchArticles().then((articles) => {
-    response.status(200).send({ articles: articles });
-  });
+  fetchArticles()
+    .then((articles) => {
+      response.status(200).send({ articles: articles });
+    })
+    .catch((error) => {
+      next(error);
+    });
 }
 
 function getArticleById(request, response, next) {
