@@ -67,7 +67,7 @@ function updateArticleVotes(inc_votes, articleId) {
   return fetchArticleById(articleId).then((article) => {
     if (article.votes === 0 && inc_votes < 0) {
       return Promise.reject({ status: 400, msg: "Bad request" });
-    } else {
+    } 
       return db
         .query(
           `UPDATE articles SET votes = votes + $1 WHERE article_id = $2 RETURNING *`,
@@ -79,7 +79,7 @@ function updateArticleVotes(inc_votes, articleId) {
           }
           return rows[0];
         });
-    }
+    
   });
 
 }
