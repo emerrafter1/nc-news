@@ -1,14 +1,45 @@
 const db = require("../db/connection");
 const { checkExists } = require("../db/seeds/utils");
 
-function fetchArticles() {
-  return db
-    .query(
-      `SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, CAST(COUNT(comments.comment_id) AS INT) AS comment_count FROM articles FULL JOIN comments ON comments.article_id = articles.article_id GROUP BY articles.article_id ORDER BY articles.created_at DESC;`
-    )
-    .then(({ rows }) => {
-      return rows;
-    });
+function fetchArticles(sort_by, order) {
+  const allowedSortBy = [
+    "author",
+    "title",
+    "article_id",
+    "topic",
+    "created_at",
+    "votes",
+    "article_img_url",
+    "comment_count",
+  ];
+
+  const allowedOrder = ["ASC", "DESC"]
+
+  let query = `SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, CAST(COUNT(comments.comment_id) AS INT) AS comment_count FROM articles FULL JOIN comments ON comments.article_id = articles.article_id GROUP BY articles.article_id `;
+
+  if (allowedSortBy.includes(sort_by)) {
+    query += `ORDER BY ${sort_by}`;
+  } else if (sort_by && !allowedSortBy.includes(sort_by)) {
+    return Promise.reject({ status: 400, msg: "Bad request" });
+  } else {
+    query += `ORDER BY articles.created_at`;
+  }
+
+  if (order && !allowedOrder.includes(order)) {
+    return Promise.reject({ status: 400, msg: "Bad request" });
+  } else if (order === "ASC") {
+    query += " ASC";
+  }
+  else {
+    query += " DESC"
+  }
+
+
+
+
+  return db.query(query).then(({ rows }) => {
+    return rows;
+  });
 }
 
 function fetchArticleById(articleId) {
@@ -50,7 +81,6 @@ function fetchCommentsByArticleId(articleId) {
 function insertComment(articleId, body, username) {
   const values = [articleId, body, username];
 
-
   return db
     .query(
       `INSERT INTO comments (article_id, body, author) VALUES($1, $2, $3) RETURNING *`,
@@ -67,21 +97,19 @@ function updateArticleVotes(inc_votes, articleId) {
   return fetchArticleById(articleId).then((article) => {
     if (article.votes === 0 && inc_votes < 0) {
       return Promise.reject({ status: 400, msg: "Bad request" });
-    } 
-      return db
-        .query(
-          `UPDATE articles SET votes = votes + $1 WHERE article_id = $2 RETURNING *`,
-          values
-        )
-        .then(({ rows }) => {
-          if (rows.length === 0) {
-            return Promise.reject({ status: 404, msg: "Not found" });
-          }
-          return rows[0];
-        });
-    
+    }
+    return db
+      .query(
+        `UPDATE articles SET votes = votes + $1 WHERE article_id = $2 RETURNING *`,
+        values
+      )
+      .then(({ rows }) => {
+        if (rows.length === 0) {
+          return Promise.reject({ status: 404, msg: "Not found" });
+        }
+        return rows[0];
+      });
   });
-
 }
 
 module.exports = {
@@ -89,5 +117,5 @@ module.exports = {
   fetchArticleById,
   fetchCommentsByArticleId,
   insertComment,
-  updateArticleVotes
+  updateArticleVotes,
 };
