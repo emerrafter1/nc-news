@@ -1,4 +1,5 @@
 const db = require("../db/connection");
+const { checkExists } = require("../db/seeds/utils");
 
 function fetchArticles() {
   return db
@@ -32,7 +33,15 @@ function fetchCommentsByArticleId(articleId) {
     )
     .then(({ rows }) => {
       if (rows.length === 0) {
-        return Promise.reject({ status: 404, msg: "Not found" });
+        return checkExists("articles", "article_id", articleId)
+          .then((response) => {
+            if (response === true) {
+              return [];
+            }
+          })
+          .catch((error) => {
+            return Promise.reject({ status: 404, msg: "Not found" });
+          });
       }
       return rows;
     });
@@ -40,6 +49,7 @@ function fetchCommentsByArticleId(articleId) {
 
 function insertComment(articleId, body, username) {
   const values = [articleId, body, username];
+
 
   return db
     .query(
@@ -71,6 +81,7 @@ function updateArticleVotes(inc_votes, articleId) {
         });
     }
   });
+
 }
 
 module.exports = {
@@ -78,5 +89,5 @@ module.exports = {
   fetchArticleById,
   fetchCommentsByArticleId,
   insertComment,
-  updateArticleVotes,
+  updateArticleVotes
 };

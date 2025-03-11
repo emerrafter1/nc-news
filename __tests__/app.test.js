@@ -127,6 +127,16 @@ describe("GET /api/articles/:article_id/comments", () => {
       });
   });
 
+  test("200: Responds with an empty array of comments when an valid article has no comments", () => {
+    return request(app)
+      .get("/api/articles/8/comments")
+      .expect(200)
+      .then(({ body }) => {
+        const comments = body.comments;
+        expect(comments.length).toBe(0);
+      });
+  });
+
   test("400: Responds with bad request when an invalid request is made", () => {
     return request(app)
       .get("/api/articles/spaghetti/comments")
