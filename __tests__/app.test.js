@@ -4,6 +4,7 @@ const request = require("supertest");
 const db = require("../db/connection");
 const seed = require("../db/seeds/seed");
 const data = require("../db/data/test-data");
+const { checkExists } = require("../db/seeds/utils");
 
 beforeEach(() => seed(data));
 
@@ -239,7 +240,7 @@ describe("PATCH /api/articles/:articleId", () => {
 
     return request(app)
       .patch("/api/articles/2")
-      .send(votesRequest )
+      .send(votesRequest)
       .expect(200)
       .then(({ body }) => {
         const article = body.article;
@@ -260,7 +261,7 @@ describe("PATCH /api/articles/:articleId", () => {
 
     return request(app)
       .patch("/api/articles/1")
-      .send( votesRequest )
+      .send(votesRequest)
       .expect(200)
       .then(({ body }) => {
         const article = body.article;
@@ -314,6 +315,35 @@ describe("PATCH /api/articles/:articleId", () => {
     return request(app)
       .patch("/api/articles/799")
       .send(votesRequest)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Not found");
+      });
+  });
+});
+
+describe("DELETE /api/comments/:comment_id", () => {
+  test("204: Responds with correct http code and when comment has been removed", () => {
+    return request(app)
+      .delete("/api/comments/2")
+      .expect(204)
+      .then((response) => {
+        expect(response.body).toEqual({});
+      });
+  });
+
+  test("400: Responds with bad request when a request is made to an invalid endpoint", () => {
+    return request(app)
+      .delete("/api/comments/banana")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+  });
+
+  test("404: Responds with not found when a valid request is made but the record does not exist", () => {
+    return request(app)
+      .delete("/api/comments/112")
       .expect(404)
       .then(({ body }) => {
         expect(body.msg).toBe("Not found");
