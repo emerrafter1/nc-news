@@ -24,4 +24,18 @@ function fetchArticleById(articleId) {
     });
 }
 
-module.exports = { fetchArticles, fetchArticleById };
+function fetchCommentsByArticleId(articleId) {
+  return db
+    .query(
+      `SELECT comment_id, votes, created_at, author, body, article_id FROM comments where article_id = $1;`,
+      [articleId]
+    )
+    .then(({ rows }) => {
+      if (rows.length === 0) {
+        return Promise.reject({ status: 404, msg: "Not found" });
+      }
+      return rows;
+    });
+}
+
+module.exports = { fetchArticles, fetchArticleById, fetchCommentsByArticleId };
