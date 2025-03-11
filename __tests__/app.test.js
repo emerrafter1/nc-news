@@ -76,7 +76,7 @@ describe("GET /api/articles/:articleId", () => {
         expect(body.msg).toBe("Bad request");
       });
   });
-  test("400: Responds with not found when a valid request is made but the record does not exist", () => {
+  test("404: Responds with not found when a valid request is made but the record does not exist", () => {
     return request(app)
       .get("/api/articles/799")
       .expect(404)
@@ -93,7 +93,6 @@ describe("GET /api/articles", () => {
       .expect(200)
       .then(({ body }) => {
         const articles = body.articles;
-
         expect(articles.length).toBe(13);
         expect(articles).toBeSorted("created_at", { descending: true });
         articles.forEach((article) => {
@@ -105,7 +104,46 @@ describe("GET /api/articles", () => {
           expect(typeof article.votes).toBe("number");
           expect(typeof article.article_img_url).toBe("string");
           expect(typeof article.comment_count).toBe("number");
+          expect(Object.hasOwnProperty(article, 'body')).toBe(false)
         });
+      });
+  });
+});
+
+describe("GET /api/articles/:article_id/comments", () => {
+  test("200: Responds with an array of comments", () => {
+    return request(app)
+      .get("/api/articles/9/comments")
+      .expect(200)
+      .then(({body}) => {
+        const comments = body.comments;
+        expect(comments.length).toBe(2);
+        comments.forEach((comment) => {
+          expect(typeof comment.comment_id).toBe("number");
+          expect(typeof comment.votes).toBe("number");
+          expect(typeof comment.created_at).toBe("string");
+          expect(typeof comment.author).toBe("string");
+          expect(typeof comment.body).toBe("string");
+          expect(comment.article_id).toBe(9);
+       });
+      });
+  });
+
+  test("400: Responds with bad request when an invalid request is made", () => {
+    return request(app)
+      .get("/api/articles/spaghetti/comments")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+  });
+
+  test("404: Responds with not found when a valid request is made but the record does not exist", () => {
+    return request(app)
+      .get("/api/articles/989/comments")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Not found");
       });
   });
 });
