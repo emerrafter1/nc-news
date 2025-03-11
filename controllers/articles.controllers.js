@@ -46,13 +46,9 @@ function postCommentOnArticle(request, response, next) {
   const articleId = request.params.article_id;
   const { username, body } = request.body;
 
-  const promises = [
-    insertComment(articleId, body, username),
-    checkExists("users", "username", username),
-  ];
 
-  Promise.all(promises)
-    .then(([comment]) => {
+  insertComment(articleId, body, username)
+    .then((comment) => {
       response.status(201).send({ comment: comment });
     })
     .catch((error) => {
