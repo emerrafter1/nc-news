@@ -90,7 +90,7 @@
     }
   },
   "PATCH /api/articles/article_id": {
-    "description": "serves an object of article",
+    "description": "patches the votes on an article object",
     "queries": [],
     "body": {
       "inc_votes": "number"
