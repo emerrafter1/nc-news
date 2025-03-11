@@ -107,6 +107,64 @@ describe("GET /api/articles", () => {
         });
       });
   });
+
+  test("Responds with a 200 and the list of all the articles sorted by the correct field", () => {
+    return request(app)
+      .get("/api/articles?sort_by=title")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles).toBeSortedBy("title", { descending: true });
+      });
+  });
+
+  test("Responds with a 400 when user tries to sort by not existent field", () => {
+    return request(app)
+      .get("/api/articles?sort_by=cheese")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+  });
+
+  test("Responds with a 200 and the list of all the articles sorted by ASC", () => {
+    return request(app)
+      .get("/api/articles?order=ASC")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles).toBeSorted(body.created_at);
+      });
+  });
+
+  test("Responds with a 200 and the list of all the articles sorted by DESC", () => {
+    return request(app)
+      .get("/api/articles?order=DESC")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles).toBeSorted(body.created_at, {
+          descending: true,
+        });
+      });
+  });
+
+  test("Responds with a 404 when user tries to order by an incorrect criteria", () => {
+    return request(app)
+      .get("/api/articles?order=UP")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+  });
+
+  test("Responds with a 200 and the list of all the articles sorted by the correct field and order", () => {
+    return request(app)
+      .get("/api/articles?sort_by=comment_count&order=DESC")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles).toBeSortedBy("comment_count", {
+          descending: true,
+        });
+      });
+  });
 });
 
 describe("GET /api/articles/:article_id/comments", () => {
@@ -350,7 +408,6 @@ describe("DELETE /api/comments/:comment_id", () => {
       });
   });
 });
-
 
 describe("GET /api/users", () => {
   test("200: Responds with an object detailing the username,name and avatar_url of all the users", () => {
