@@ -2,6 +2,7 @@ const express = require("express");
 const app = express();
 const endpoints = require("./endpoints.json");
 const { getTopics } = require("./controllers/topics.controllers");
+const { getUsers } = require("./controllers/users.controllers");
 const {
   getArticles,
   getArticleById,
@@ -36,6 +37,8 @@ app.post("/api/articles/:article_id/comments", postCommentOnArticle);
 app.patch("/api/articles/:article_id", patchArticleVotes);
 
 app.delete("/api/comments/:comment_id", deleteComment)
+
+app.get("/api/users", getUsers)
 
 app.all("*", (request, response, next) => {
   response.status(404).send({ msg: "path not found" });
