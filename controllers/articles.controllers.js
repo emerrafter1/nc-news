@@ -3,6 +3,7 @@ const {
   fetchArticleById,
   fetchCommentsByArticleId,
   insertComment,
+  updateArticleVotes,
 } = require("../models/articles.models");
 
 const { checkExists } = require("../db/seeds/utils");
@@ -59,9 +60,23 @@ function postCommentOnArticle(request, response, next) {
     });
 }
 
+function patchArticleVotes(request, response, next) {
+  const articleId = request.params.article_id;
+  const { inc_votes } = request.body;
+
+  updateArticleVotes(inc_votes, articleId)
+    .then((article) => {
+      response.status(200).send({ article: article });
+    })
+    .catch((error) => {
+      next(error);
+    });
+}
+
 module.exports = {
   getArticles,
   getArticleById,
   getCommentsByArticleId,
   postCommentOnArticle,
+  patchArticleVotes,
 };

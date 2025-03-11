@@ -50,6 +50,7 @@ function fetchCommentsByArticleId(articleId) {
 function insertComment(articleId, body, username) {
   const values = [articleId, body, username];
 
+
   return db
     .query(
       `INSERT INTO comments (article_id, body, author) VALUES($1, $2, $3) RETURNING *`,
@@ -60,9 +61,33 @@ function insertComment(articleId, body, username) {
     });
 }
 
+function updateArticleVotes(inc_votes, articleId) {
+  const values = [inc_votes, articleId];
+
+  return fetchArticleById(articleId).then((article) => {
+    if (article.votes === 0 && inc_votes < 0) {
+      return Promise.reject({ status: 400, msg: "Bad request" });
+    } else {
+      return db
+        .query(
+          `UPDATE articles SET votes = votes + $1 WHERE article_id = $2 RETURNING *`,
+          values
+        )
+        .then(({ rows }) => {
+          if (rows.length === 0) {
+            return Promise.reject({ status: 404, msg: "Not found" });
+          }
+          return rows[0];
+        });
+    }
+  });
+
+}
+
 module.exports = {
   fetchArticles,
   fetchArticleById,
   fetchCommentsByArticleId,
   insertComment,
+  updateArticleVotes
 };
