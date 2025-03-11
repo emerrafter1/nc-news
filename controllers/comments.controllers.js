@@ -1,11 +1,11 @@
 const { removeComment } = require("../models/comments.models");
 
 function deleteComment(request, response, next) {
-  const commentId = request.params.comment_id;
+  const {comment_id} = request.params;
 
 
 
-  removeComment(commentId)
+  removeComment(comment_id)
     .then(() => {
       response.status(204).send();
     })

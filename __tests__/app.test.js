@@ -390,7 +390,7 @@ describe("DELETE /api/comments/:comment_id", () => {
       });
   });
 
-  test("400: Responds with bad request when a request is made to an invalid endpoint", () => {
+  test("400: Responds with bad request when a request to an invalid article_id is made", () => {
     return request(app)
       .delete("/api/comments/banana")
       .expect(400)
