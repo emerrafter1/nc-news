@@ -38,4 +38,13 @@ function fetchCommentsByArticleId(articleId) {
     });
 }
 
-module.exports = { fetchArticles, fetchArticleById, fetchCommentsByArticleId };
+function insertComment(articleId, body, username){
+    const values = [articleId, body, username]
+
+    return db.query(`INSERT INTO comments (article_id, body, author) VALUES($1, $2, $3) RETURNING *`, values).then(({rows}) => {
+        return rows[0];
+    })
+
+}
+
+module.exports = { fetchArticles, fetchArticleById, fetchCommentsByArticleId, insertComment };
