@@ -89,7 +89,7 @@
       }
     }
   },
-  "POST /api/articles/article_id": {
+  "PATCH /api/articles/article_id": {
     "description": "serves an object of article",
     "queries": [],
     "body": {
