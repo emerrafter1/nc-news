@@ -1,8 +1,11 @@
 const {
   fetchArticles,
   fetchArticleById,
-  fetchCommentsByArticleId
+  fetchCommentsByArticleId,
+  insertComment,
 } = require("../models/articles.models");
+
+const { checkExists } = require("../db/seeds/utils");
 
 function getArticles(request, response, next) {
   fetchArticles()
@@ -27,15 +30,38 @@ function getArticleById(request, response, next) {
 }
 
 function getCommentsByArticleId(request, response, next) {
-    const articleId = request.params.article_id;
-  
-    fetchCommentsByArticleId(articleId)
-      .then((comments) => {
-        response.status(200).send({ comments: comments });
-      })
-      .catch((error) => {
-        next(error);
-      });
-  }
+  const articleId = request.params.article_id;
 
-module.exports = { getArticles, getArticleById, getCommentsByArticleId };
+  fetchCommentsByArticleId(articleId)
+    .then((comments) => {
+      response.status(200).send({ comments: comments });
+    })
+    .catch((error) => {
+      next(error);
+    });
+}
+
+function postCommentOnArticle(request, response, next) {
+  const articleId = request.params.article_id;
+  const { username, body } = request.body;
+
+  const promises = [
+    insertComment(articleId, body, username),
+    checkExists("users", "username", username),
+  ];
+
+  Promise.all(promises)
+    .then(([comment]) => {
+      response.status(201).send({ comment: comment });
+    })
+    .catch((error) => {
+      next(error);
+    });
+}
+
+module.exports = {
+  getArticles,
+  getArticleById,
+  getCommentsByArticleId,
+  postCommentOnArticle,
+};

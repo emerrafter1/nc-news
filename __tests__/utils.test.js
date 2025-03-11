@@ -1,7 +1,11 @@
 const {
   convertTimestampToDate,
   createLookupObject,
+  checkExists
 } = require("../db/seeds/utils");
+const db = require("../db/connection")
+const seed = require("../db/seeds/seed")
+const data = require("../db/data/test-data");
 
 describe("convertTimestampToDate", () => {
   test("returns a new object", () => {
@@ -145,5 +149,36 @@ describe("createLookupObject", () => {
     const actual = createLookupObject(inputData, "title", "article_id")
 
     expect(actual).not.toBe(expected)
+
+
+
+
+
+  });
+});
+
+
+
+describe("checkExists", () => {
+
+  beforeEach(() => seed(data));
+
+  afterAll(() => db.end());
+
+
+
+  test("returns true if the resource exits", () => {
+    checkExists("users", "username", "butter_bridge").then((response) => {
+      expect(response).toBe(true);
+    });
+  });
+
+  test("returns resource not found if the resource does not exit", () => {
+    checkExists("articles", "title", "How to make a grilled cheese").then(
+      (response) => {
+        expect(response.status).toBe(404);
+        expect(response.msg).toBe("Resource not found");
+      }
+    );
   });
 });
