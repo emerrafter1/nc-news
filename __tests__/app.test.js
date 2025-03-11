@@ -4,9 +4,6 @@ const request = require("supertest");
 const db = require("../db/connection");
 const seed = require("../db/seeds/seed");
 const data = require("../db/data/test-data");
-/* Set up your test imports here */
-
-/* Set up your beforeEach & afterAll functions here */
 
 beforeEach(() => seed(data));
 
@@ -104,7 +101,7 @@ describe("GET /api/articles", () => {
           expect(typeof article.votes).toBe("number");
           expect(typeof article.article_img_url).toBe("string");
           expect(typeof article.comment_count).toBe("number");
-          expect(Object.hasOwnProperty(article, 'body')).toBe(false)
+          expect(Object.hasOwnProperty(article, "body")).toBe(false);
         });
       });
   });
@@ -115,7 +112,7 @@ describe("GET /api/articles/:article_id/comments", () => {
     return request(app)
       .get("/api/articles/9/comments")
       .expect(200)
-      .then(({body}) => {
+      .then(({ body }) => {
         const comments = body.comments;
         expect(comments.length).toBe(2);
         comments.forEach((comment) => {
@@ -125,13 +122,90 @@ describe("GET /api/articles/:article_id/comments", () => {
           expect(typeof comment.author).toBe("string");
           expect(typeof comment.body).toBe("string");
           expect(comment.article_id).toBe(9);
-       });
+        });
       });
   });
 
   test("400: Responds with bad request when an invalid request is made", () => {
     return request(app)
       .get("/api/articles/spaghetti/comments")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+  });
+
+  test("404: Responds with not found when a valid request is made but the record does not exist", () => {
+    return request(app)
+      .get("/api/articles/989/comments")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Not found");
+      });
+  });
+});
+
+describe("POST /api/articles/:article_id/comments", () => {
+  test("201: Responds with an object of the posted comment", () => {
+    const commentRequest = {
+      username: "icellusedkars",
+      body: "I loved learning about this",
+    };
+    return request(app)
+      .post("/api/articles/4/comments")
+      .send(commentRequest)
+      .expect(201)
+      .then(({ body }) => {
+        const currentTime = new Date();
+        const tolerance = 20;
+        const comment = body.comment;
+        const createdAt = new Date(comment.created_at);
+
+        expect(comment.comment_id).toBe(19);
+        expect(comment.article_id).toBe(4);
+        expect(comment.body).toBe("I loved learning about this");
+        expect(comment.votes).toBe(0);
+        expect(comment.author).toBe("icellusedkars");
+
+        expect(Math.abs(currentTime - createdAt)).toBeLessThanOrEqual(
+          tolerance
+        );
+      });
+  });
+
+  test("400: Responds with bad request when a username is used that does not belong to an existing user", () => {
+    const commentRequest = {
+      username: "tester123",
+      body: "This article was really interesting",
+    };
+    return request(app)
+      .post("/api/articles/11/comments")
+      .send(commentRequest)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+  });
+
+  test("400: Responds with bad request when a request is made to an invalid endpoint", () => {
+    const commentRequest = {
+      username: "icellusedkars",
+      body: "This article was really interesting",
+    };
+    return request(app)
+      .post("/api/articles/spaghetti/comments")
+      .send(commentRequest)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+  });
+
+  test("400: Responds with bad request when an invalid request is made to a valid endpoint", () => {
+    const commentRequest = { username: "icellusedkars", body: null };
+    return request(app)
+      .post("/api/articles/7/comments")
+      .send(commentRequest)
       .expect(400)
       .then(({ body }) => {
         expect(body.msg).toBe("Bad request");
