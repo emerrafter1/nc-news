@@ -20,7 +20,7 @@ Repository can be cloned by running: `git clone https://github.com/emerrafter1/n
 ### Seeding local database
 
 1. Run `npm run setup-dbs` to set up databases
-2. Run `npm run setup-dbs` to seed the development databases
+2. Run `npm run seed-dev` to seed the development databases
 
 ### Running tests
 
@@ -39,7 +39,7 @@ Repository can be cloned by running: `git clone https://github.com/emerrafter1/n
     `PGDATABASE=nc_news_test`
 
 
-*Note: this is for the purpose of running the code only, in a real world example this information would be kept private due to it's senstivity*
+*Note: this is for the purpose of running the code only, in a real world example this information would be kept private due to it's sensitivity*
 
 
 
