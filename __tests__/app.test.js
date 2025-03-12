@@ -184,7 +184,15 @@ describe("GET /api/articles", () => {
         const articles = body.articles;
         expect(articles.length).toBe(12);
         articles.forEach((article) => {
+          expect(typeof article.author).toBe("string");
+          expect(typeof article.title).toBe("string");
+          expect(typeof article.article_id).toBe("number");
           expect(article.topic).toBe("mitch");
+          expect(typeof article.created_at).toBe("string");
+          expect(typeof article.votes).toBe("number");
+          expect(typeof article.article_img_url).toBe("string");
+          expect(typeof article.comment_count).toBe("number");
+          
         });
       });
   });
