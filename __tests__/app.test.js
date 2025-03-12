@@ -49,7 +49,28 @@ describe("GET /api/topics", () => {
 });
 
 describe("GET /api/articles/:articleId", () => {
-  test("200: Responds with an object detailing the article", () => {
+  test("200: Responds with an object detailing the article and a comment_count when comments have been made", () => {
+    return request(app)
+      .get("/api/articles/1")
+      .expect(200)
+      .then(({ body }) => {
+        const article = body.article;
+        console.log(article)
+        expect(article.article_id).toBe(1);
+        expect(article.author).toBe("butter_bridge");
+        expect(article.title).toBe("Living in the shadow of a great man");
+        expect(article.body).toBe("I find this existence challenging");
+        expect(article.topic).toBe("mitch");
+        expect(article.created_at).toBe("2020-07-09T20:11:00.000Z");
+        expect(article.votes).toBe(100);
+        expect(article.article_img_url).toBe(
+          "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+        );
+        expect(article.comment_count).toBe(11);
+      });
+  });
+
+  test("200: Responds with an object detailing the article and a comment_count of zero when no comments have been made", () => {
     return request(app)
       .get("/api/articles/7")
       .expect(200)
@@ -59,12 +80,13 @@ describe("GET /api/articles/:articleId", () => {
         expect(article.author).toBe("icellusedkars");
         expect(article.title).toBe("Z");
         expect(article.body).toBe("I was hungry.");
-        expect(article.title).toBe("Z");
+        expect(article.topic).toBe("mitch");
         expect(article.created_at).toBe("2020-01-07T14:08:00.000Z");
         expect(article.votes).toBe(0);
         expect(article.article_img_url).toBe(
           "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
         );
+        expect(article.comment_count).toBe(0);
       });
   });
   test("400: Responds with bad request when an invalid request is made", () => {
@@ -192,7 +214,7 @@ describe("GET /api/articles", () => {
       .get("/api/articles?sort_by=comment_count&order=DESC&topic=mitch")
       .expect(200)
       .then(({ body }) => {
-        expect(body.articles.length).toBe(12)
+        expect(body.articles.length).toBe(12);
         expect(body.articles).toBeSortedBy("comment_count", {
           descending: true,
         });
