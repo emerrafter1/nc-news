@@ -155,11 +155,44 @@ describe("GET /api/articles", () => {
       });
   });
 
-  test("Responds with a 200 and the list of all the articles sorted by the correct field and order", () => {
+  test("200: Responds with an array of articles of a given topic", () => {
     return request(app)
-      .get("/api/articles?sort_by=comment_count&order=DESC")
+      .get("/api/articles?topic=mitch")
       .expect(200)
       .then(({ body }) => {
+        const articles = body.articles;
+        expect(articles.length).toBe(12);
+        articles.forEach((article) => {
+          expect(article.topic).toBe("mitch");
+        });
+      });
+  });
+
+  test("200: Responds with an empty array of articles for a valid topic with no related articles", () => {
+    return request(app)
+      .get("/api/articles?topic=paper")
+      .expect(200)
+      .then(({ body }) => {
+        const articles = body.articles;
+        expect(articles.length).toBe(0);
+      });
+  });
+
+  test("404: Responds with not found when a valid request is made but the record does not exist", () => {
+    return request(app)
+      .get("/api/articles?topic=cheese")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Not found");
+      });
+  });
+
+  test("Responds with a 200 and the list of all the articles sorted by the correct field and order", () => {
+    return request(app)
+      .get("/api/articles?sort_by=comment_count&order=DESC&topic=mitch")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles.length).toBe(12)
         expect(body.articles).toBeSortedBy("comment_count", {
           descending: true,
         });

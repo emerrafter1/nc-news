@@ -1,7 +1,7 @@
 const db = require("../db/connection");
 const { checkExists } = require("../db/seeds/utils");
 
-function fetchArticles(sort_by, order) {
+function fetchArticles(sort_by, order, topic) {
   const allowedSortBy = [
     "author",
     "title",
@@ -13,29 +13,37 @@ function fetchArticles(sort_by, order) {
     "comment_count",
   ];
 
-  const allowedOrder = ["ASC", "DESC"]
+  const allowedOrder = ["ASC", "DESC"];
 
-  let query = `SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, CAST(COUNT(comments.comment_id) AS INT) AS comment_count FROM articles FULL JOIN comments ON comments.article_id = articles.article_id GROUP BY articles.article_id `;
+  let query = `SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, CAST(COUNT(comments.comment_id) AS INT) AS comment_count FROM articles FULL JOIN comments ON comments.article_id = articles.article_id`;
+
+  //WHERE
+
+  if (topic) {
+    query += ` WHERE articles.topic = '${topic}'`;
+  }
+
+  //GROUP BY
+
+  query += ` GROUP BY articles.article_id`;
+
+  //ORDER BY
 
   if (allowedSortBy.includes(sort_by)) {
-    query += `ORDER BY ${sort_by}`;
+    query += ` ORDER BY ${sort_by}`;
   } else if (sort_by && !allowedSortBy.includes(sort_by)) {
     return Promise.reject({ status: 400, msg: "Bad request" });
   } else {
-    query += `ORDER BY articles.created_at`;
+    query += ` ORDER BY articles.created_at`;
   }
 
   if (order && !allowedOrder.includes(order)) {
     return Promise.reject({ status: 400, msg: "Bad request" });
   } else if (order === "ASC") {
     query += " ASC";
+  } else {
+    query += " DESC";
   }
-  else {
-    query += " DESC"
-  }
-
-
-
 
   return db.query(query).then(({ rows }) => {
     return rows;
