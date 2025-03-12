@@ -15,7 +15,10 @@ function fetchArticles(sort_by, order, topic) {
 
   const allowedOrder = ["ASC", "DESC"];
 
-  let query = `SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, CAST(COUNT(comments.comment_id) AS INT) AS comment_count FROM articles FULL JOIN comments ON comments.article_id = articles.article_id`;
+  let query = `SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, CAST(COUNT(comments.comment_id) AS INT) AS comment_count 
+  FROM articles 
+  FULL JOIN comments 
+  ON comments.article_id = articles.article_id`;
 
   //WHERE
 
@@ -31,18 +34,21 @@ function fetchArticles(sort_by, order, topic) {
 
   if (allowedSortBy.includes(sort_by)) {
     query += ` ORDER BY ${sort_by}`;
-  } else if (sort_by && !allowedSortBy.includes(sort_by)) {
-    return Promise.reject({ status: 400, msg: "Bad request" });
   } else {
     query += ` ORDER BY articles.created_at`;
   }
 
-  if (order && !allowedOrder.includes(order)) {
-    return Promise.reject({ status: 400, msg: "Bad request" });
-  } else if (order === "ASC") {
+  if (order === "ASC") {
     query += " ASC";
   } else {
     query += " DESC";
+  }
+
+  if (
+    (order && !allowedOrder.includes(order)) ||
+    (sort_by && !allowedSortBy.includes(sort_by))
+  ) {
+    return Promise.reject({ status: 400, msg: "Bad request" });
   }
 
   return db.query(query).then(({ rows }) => {
