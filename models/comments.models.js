@@ -10,4 +10,22 @@ function removeComment(commentId) {
     });
 }
 
-module.exports = { removeComment };
+function updateCommentVotes(inc_votes, commentId) {
+  const values = [inc_votes, commentId];
+
+
+  return db
+    .query(
+      `UPDATE comments SET votes = votes + $1 WHERE comment_id = $2 RETURNING *`,
+      values
+    )
+    .then(({ rows }) => {
+
+      if (rows.length === 0) {
+        return Promise.reject({ status: 404, msg: "Not found" });
+      }
+      return rows[0];
+    });
+}
+
+module.exports = { removeComment, updateCommentVotes };
