@@ -4,6 +4,7 @@
   "description": "bc-nc-news",
   "main": "listen.js",
   "scripts": {
+    "seed-prod": "NODE_ENV=production npm run seed",
     "setup-dbs": "psql -f ./db/setup-dbs.sql",
     "seed-dev": "node ./db/seeds/run-seed.js",
     "test": "jest",
@@ -37,7 +38,8 @@
   },
   "jest": {
     "setupFilesAfterEnv": [
-      "jest-extended/all",  "jest-sorted"
+      "jest-extended/all",
+      "jest-sorted"
     ]
   }
 }
