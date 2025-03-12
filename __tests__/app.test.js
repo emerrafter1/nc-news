@@ -189,9 +189,10 @@ describe("GET /api/articles", () => {
 
   test("Responds with a 200 and the list of all the articles sorted by the correct field and order", () => {
     return request(app)
-      .get("/api/articles?sort_by=comment_count&order=DESC")
+      .get("/api/articles?sort_by=comment_count&order=DESC&topic=mitch")
       .expect(200)
       .then(({ body }) => {
+        expect(body.articles.length).toBe(12)
         expect(body.articles).toBeSortedBy("comment_count", {
           descending: true,
         });
