@@ -192,7 +192,6 @@ describe("GET /api/articles", () => {
           expect(typeof article.votes).toBe("number");
           expect(typeof article.article_img_url).toBe("string");
           expect(typeof article.comment_count).toBe("number");
-          
         });
       });
   });
@@ -487,3 +486,5 @@ describe("GET /api/users", () => {
       });
   });
 });
+
+
