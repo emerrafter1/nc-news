@@ -487,4 +487,28 @@ describe("GET /api/users", () => {
   });
 });
 
+describe("GET /api/users/:username", () => {
+  test("200: Responds with a user object detailing the username, avatar_url and name", () => {
+    return request(app)
+      .get("/api/users/rogersop")
+      .expect(200)
+      .then(({ body }) => {
+        const user = body.user;
+        expect(user.username).toBe("rogersop");
+        expect(user.name).toBe("paul");
+        expect(user.avatar_url).toBe(
+          "https://avatars2.githubusercontent.com/u/24394918?s=400&v=4"
+        );
+      });
+  });
 
+
+  test("404: Responds with not found when a valid request is made but the record does not exist", () => {
+    return request(app)
+      .get("/api/users/tom")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Not found");
+      });
+  });
+});
