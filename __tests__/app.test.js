@@ -502,10 +502,84 @@ describe("GET /api/users/:username", () => {
       });
   });
 
-
   test("404: Responds with not found when a valid request is made but the record does not exist", () => {
     return request(app)
       .get("/api/users/tom")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Not found");
+      });
+  });
+});
+
+describe("PATCH /api/comments/:commentId", () => {
+  test("200: Responds with an object detailing the article including a votes increase of 10", () => {
+    const votesRequest = { inc_votes: 10 };
+
+    return request(app)
+      .patch("/api/comments/2")
+      .send(votesRequest)
+      .expect(200)
+      .then(({ body }) => {
+        const comment = body.comment;
+        expect(comment.comment_id).toBe(2);
+        expect(comment.article_id).toBe(1);
+        expect(comment.body).toBe(
+          "The beautiful thing about treasure is that it exists. Got to find out what kind of sheets these are; not cotton, not rayon, silky."
+        );
+        expect(comment.votes).toBe(24);
+        expect(comment.author).toBe("butter_bridge");
+        expect(comment.created_at).toBe("2020-10-31T03:03:00.000Z");
+      });
+  });
+
+  test("200: Responds with an object detailing the article including a votes decrease of 4", () => {
+    const votesRequest = { inc_votes: -4 };
+
+    return request(app)
+      .patch("/api/comments/1")
+      .send(votesRequest)
+      .expect(200)
+      .then(({ body }) => {
+        const comment = body.comment;
+        expect(comment.comment_id).toBe(1);
+        expect(comment.article_id).toBe(9);
+        expect(comment.body).toBe(
+          "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!"
+        );
+        expect(comment.votes).toBe(12);
+        expect(comment.author).toBe("butter_bridge");
+        expect(comment.created_at).toBe("2020-04-06T12:17:00.000Z");
+      });
+  });
+
+  test("400: Responds with bad request when a request is made to an invalid endpoint", () => {
+    const votesRequest = { inc_votes: 10 };
+    return request(app)
+      .patch("/api/comments/banana")
+      .send(votesRequest)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+  });
+
+  test("400: Responds with bad request when an invalid request is made to a valid endpoint", () => {
+    const votesRequest = { inc_votes: "cheese" };
+    return request(app)
+      .patch("/api/comments/7")
+      .send(votesRequest)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+  });
+
+  test("404: Responds with not found when a valid request is made but the record does not exist", () => {
+    const votesRequest = { inc_votes: 10 };
+    return request(app)
+      .patch("/api/comments/799")
+      .send(votesRequest)
       .expect(404)
       .then(({ body }) => {
         expect(body.msg).toBe("Not found");
