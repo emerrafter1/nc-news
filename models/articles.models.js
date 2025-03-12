@@ -20,10 +20,13 @@ function fetchArticles(sort_by, order, topic) {
   FULL JOIN comments 
   ON comments.article_id = articles.article_id`;
 
+  const queryParams = []
+
   //WHERE
 
   if (topic) {
-    query += ` WHERE articles.topic = '${topic}'`;
+    query += ` WHERE articles.topic = $1`;
+    queryParams.push(topic)
   }
 
   //GROUP BY
@@ -51,7 +54,7 @@ function fetchArticles(sort_by, order, topic) {
     return Promise.reject({ status: 400, msg: "Bad request" });
   }
 
-  return db.query(query).then(({ rows }) => {
+  return db.query(query, queryParams).then(({ rows }) => {
     return rows;
   });
 }
