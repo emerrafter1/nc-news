@@ -4,14 +4,13 @@ const {
   fetchCommentsByArticleId,
   insertComment,
   updateArticleVotes,
-  insertArticle
+  insertArticle,
 } = require("../models/articles.models");
 
 const { checkExists } = require("../db/seeds/utils");
 
 function getArticles(request, response, next) {
   const { sort_by, order, topic, page, limit } = request.query;
-
 
   promises = [fetchArticles(sort_by, order, topic, limit, page)];
 
@@ -29,9 +28,9 @@ function getArticles(request, response, next) {
 }
 
 function getArticleById(request, response, next) {
-  const articleId = request.params.article_id;
+  const { article_id } = request.params;
 
-  fetchArticleById(articleId)
+  fetchArticleById(article_id)
     .then((article) => {
       response.status(200).send({ article: article });
     })
@@ -41,9 +40,10 @@ function getArticleById(request, response, next) {
 }
 
 function getCommentsByArticleId(request, response, next) {
-  const articleId = request.params.article_id;
+  const { article_id } = request.params;
+  const { page, limit } = request.query;
 
-  fetchCommentsByArticleId(articleId)
+  fetchCommentsByArticleId(article_id, page, limit)
     .then((comments) => {
       response.status(200).send({ comments: comments });
     })
@@ -78,26 +78,16 @@ function patchArticleVotes(request, response, next) {
     });
 }
 
+function postArticle(request, response, next) {
+  const { author, title, body, topic, article_img_url } = request.body;
 
-function postArticle(request, response, next){
-
-const {author,
-  title,
-  body,
-  topic,
-  article_img_url} = request.body
-
-  insertArticle(author,
-    title,
-    body,
-    topic,
-    article_img_url)
-  .then((article) => {
-    response.status(201).send({ article: article });
-  })
-  .catch((error) => {
-    next(error);
-  });
+  insertArticle(author, title, body, topic, article_img_url)
+    .then((article) => {
+      response.status(201).send({ article: article });
+    })
+    .catch((error) => {
+      next(error);
+    });
 }
 
 module.exports = {
@@ -106,5 +96,5 @@ module.exports = {
   getCommentsByArticleId,
   postCommentOnArticle,
   patchArticleVotes,
-  postArticle
+  postArticle,
 };
