@@ -1,7 +1,7 @@
 const db = require("../db/connection");
 const { checkExists } = require("../db/seeds/utils");
 
-function fetchArticles(sort_by, order, topic) {
+function fetchArticles(sort_by, order, topic, limit, page) {
   const allowedSortBy = [
     "author",
     "title",
@@ -21,12 +21,14 @@ function fetchArticles(sort_by, order, topic) {
   ON comments.article_id = articles.article_id`;
 
   const queryParams = [];
+  let queryParamCount =1
 
   //WHERE
 
   if (topic) {
-    query += ` WHERE articles.topic = $1`;
+    query += ` WHERE articles.topic = $${queryParamCount}`;
     queryParams.push(topic);
+    queryParamCount++
   }
 
   //GROUP BY
@@ -45,6 +47,18 @@ function fetchArticles(sort_by, order, topic) {
     query += " ASC";
   } else {
     query += " DESC";
+  }
+
+  if (limit) {
+    query += ` LIMIT $${queryParamCount}`;
+    queryParams.push(limit);
+    queryParamCount++
+  }
+
+  if(page){
+    const offset = Number(page)*Number(limit)
+    query += ` OFFSET $${queryParamCount}`
+    queryParams.push(offset)
   }
 
   if (
@@ -134,7 +148,13 @@ function updateArticleVotes(inc_votes, articleId) {
   });
 }
 
-function insertArticle(author, title, body, topic, article_img_url = "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700") {
+function insertArticle(
+  author,
+  title,
+  body,
+  topic,
+  article_img_url = "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+) {
   const values = [author, title, body, topic, article_img_url];
 
   return db
