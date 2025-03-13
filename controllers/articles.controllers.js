@@ -5,6 +5,7 @@ const {
   insertComment,
   updateArticleVotes,
   insertArticle,
+  removeArticle,
 } = require("../models/articles.models");
 
 const { checkExists } = require("../db/seeds/utils");
@@ -90,6 +91,18 @@ function postArticle(request, response, next) {
     });
 }
 
+function deleteArticle(request, response, next) {
+  const { article_id } = request.params;
+
+  removeArticle(article_id)
+    .then(() => {
+      response.status(204).send();
+    })
+    .catch((error) => {
+      next(error)
+    });
+}
+
 module.exports = {
   getArticles,
   getArticleById,
@@ -97,4 +110,5 @@ module.exports = {
   postCommentOnArticle,
   patchArticleVotes,
   postArticle,
+  deleteArticle,
 };

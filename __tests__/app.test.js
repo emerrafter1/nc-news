@@ -838,7 +838,6 @@ describe("POST /api/topics", () => {
       .send(topicRequest)
       .expect(201)
       .then(({ body }) => {
-        console.log(body)
         const topic = body.topic;
         expect(topic.slug).toBe("Art")
         expect(topic.description).toBe("Painting is really fun")
@@ -856,3 +855,34 @@ describe("POST /api/topics", () => {
       });
   });
 })
+
+
+
+describe("DELETE /api/articles/:article_id", () => {
+  test("204: Responds with correct http code when article has been removed", () => {
+    return request(app)
+      .delete("/api/articles/5")
+      .expect(204)
+      .then((response) => {
+        expect(response.body).toEqual({});
+      });
+  });
+
+  test("400: Responds with bad request when a request to an invalid article_id is made", () => {
+    return request(app)
+      .delete("/api/articles/banana")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+  });
+
+  test("404: Responds with not found when a valid request is made but the record does not exist", () => {
+    return request(app)
+      .delete("/api/articles/112")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Not found");
+      });
+  });
+});

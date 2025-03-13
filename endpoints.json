@@ -111,7 +111,7 @@
     }
   },
 
-  "DELETE /api/comments/:commet_id": {
+  "DELETE /api/comments/:comment_id": {
     "description": "deletes a comment",
     "queries": [],
     "exampleResponse": {}
@@ -200,5 +200,11 @@
         "img_url": null
       }
     }
+  },
+
+  "DELETE /api/articles/:article_id": {
+    "description": "deletes an article",
+    "queries": [],
+    "exampleResponse": {}
   }
 }
