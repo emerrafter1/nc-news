@@ -1,5 +1,5 @@
 function handlePsqlError(error, request, response, next) {
-  if (error.code === "22P02" || error.code === "23502" ) {
+  if (error.code === "22P02" || error.code === "23502" || error.code === "23505" ) {
     response.status(400).send({ msg: "Bad request" });
   }
   else if(error.code === "23503"){
