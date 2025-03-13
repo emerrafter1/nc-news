@@ -21,14 +21,14 @@ function fetchArticles(sort_by, order, topic, limit, page) {
   ON comments.article_id = articles.article_id`;
 
   const queryParams = [];
-  let queryParamCount =1
+  let queryParamCount = 1;
 
   //WHERE
 
   if (topic) {
     query += ` WHERE articles.topic = $${queryParamCount}`;
     queryParams.push(topic);
-    queryParamCount++
+    queryParamCount++;
   }
 
   //GROUP BY
@@ -52,13 +52,13 @@ function fetchArticles(sort_by, order, topic, limit, page) {
   if (limit) {
     query += ` LIMIT $${queryParamCount}`;
     queryParams.push(limit);
-    queryParamCount++
+    queryParamCount++;
   }
 
-  if(page){
-    const offset = Number(page)*Number(limit)
-    query += ` OFFSET $${queryParamCount}`
-    queryParams.push(offset)
+  if (page) {
+    const offset = Number(page) * Number(limit);
+    query += ` OFFSET $${queryParamCount}`;
+    queryParams.push(offset);
   }
 
   if (
@@ -92,26 +92,38 @@ function fetchArticleById(articleId) {
     });
 }
 
-function fetchCommentsByArticleId(articleId) {
-  return db
-    .query(
-      `SELECT comment_id, votes, created_at, author, body, article_id FROM comments where article_id = $1 ORDER BY created_at DESC;`,
-      [articleId]
-    )
-    .then(({ rows }) => {
-      if (rows.length === 0) {
-        return checkExists("articles", "article_id", articleId)
-          .then((response) => {
-            if (response === true) {
-              return [];
-            }
-          })
-          .catch((error) => {
-            return Promise.reject({ status: 404, msg: "Not found" });
-          });
-      }
-      return rows;
-    });
+function fetchCommentsByArticleId(article_id, page, limit) {
+  let query = `SELECT comment_id, votes, created_at, author, body, article_id FROM comments where article_id = $1 ORDER BY created_at DESC`;
+
+  let queryParams = [article_id];
+  let queryParamCount = 2;
+
+  if (limit) {
+    query += ` LIMIT $${queryParamCount}`;
+    queryParams.push(limit);
+    queryParamCount++;
+  }
+
+  if (page) {
+    const offset = Number(page) * Number(limit);
+    query += ` OFFSET $${queryParamCount}`;
+    queryParams.push(offset);
+  }
+
+  return db.query(query, queryParams).then(({ rows }) => {
+    if (rows.length === 0) {
+      return checkExists("articles", "article_id", article_id)
+        .then((response) => {
+          if (response === true) {
+            return [];
+          }
+        })
+        .catch((error) => {
+          return Promise.reject({ status: 404, msg: "Not found" });
+        });
+    }
+    return rows;
+  });
 }
 
 function insertComment(articleId, body, username) {
