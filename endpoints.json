@@ -41,7 +41,8 @@
         "topic": "mitch",
         "created_at": "2020-01-07T14:08:00.000Z",
         "votes": 0,
-        "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+        "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+        "comment_count": 4
       }
     }
   },
@@ -156,6 +157,31 @@
         "votes": 24,
         "author": "butter_bridge",
         "created_at": "2020-10-31T03:03:00.000Z"
+      }
+    }
+  }, 
+
+  "POST /api/articles/:article_id": {
+    "description": "serves an object of article",
+    "queries": [],
+    "body": {
+      "author": "icellusedkars",
+      "title": "Things to do with recycled paper",
+      "body": "I love making things out of paper",
+      "topic": "paper",
+      "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+    },
+    "exampleResponse":       {
+      "article": {
+        "article_id": 14,
+        "title": "Things to do with recycled paper",
+        "topic": "paper",
+        "author": "icellusedkars",
+        "body": "I love making things out of paper",
+        "created_at": "2025-03-13T10:56:21.635Z",
+        "votes": 0,
+        "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+        "comment_count": 0
       }
     }
   }

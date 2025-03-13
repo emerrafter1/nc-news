@@ -20,13 +20,13 @@ function fetchArticles(sort_by, order, topic) {
   FULL JOIN comments 
   ON comments.article_id = articles.article_id`;
 
-  const queryParams = []
+  const queryParams = [];
 
   //WHERE
 
   if (topic) {
     query += ` WHERE articles.topic = $1`;
-    queryParams.push(topic)
+    queryParams.push(topic);
   }
 
   //GROUP BY
@@ -134,10 +134,27 @@ function updateArticleVotes(inc_votes, articleId) {
   });
 }
 
+function insertArticle(author, title, body, topic, article_img_url = "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700") {
+  const values = [author, title, body, topic, article_img_url];
+
+  return db
+    .query(
+      `INSERT INTO articles (author, title, body, topic, article_img_url) 
+        VALUES ($1, $2, $3, $4 ,$5) 
+        RETURNING *`,
+      values
+    )
+    .then(({ rows }) => {
+      rows[0].comment_count = 0;
+      return rows[0];
+    });
+}
+
 module.exports = {
   fetchArticles,
   fetchArticleById,
   fetchCommentsByArticleId,
   insertComment,
   updateArticleVotes,
+  insertArticle,
 };
