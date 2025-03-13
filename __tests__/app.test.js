@@ -826,3 +826,33 @@ describe("POST /api/articles", () => {
       });
   });
 });
+
+describe("POST /api/topics", () => {
+  test("201: Responds with an object of the posted topic", () => {
+    const topicRequest = {
+      slug: "Art",
+      description: "Painting is really fun",
+    };
+    return request(app)
+      .post("/api/topics")
+      .send(topicRequest)
+      .expect(201)
+      .then(({ body }) => {
+        console.log(body)
+        const topic = body.topic;
+        expect(topic.slug).toBe("Art")
+        expect(topic.description).toBe("Painting is really fun")
+      });
+  });
+
+  test("400: Responds with bad request when an invalid request is made to a valid endpoint", () => {
+    const topicRequest = { slug: "cats", description: "Reasons why cats are so cool" };
+    return request(app)
+      .post("/api/topics")
+      .send(topicRequest)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+  });
+})
