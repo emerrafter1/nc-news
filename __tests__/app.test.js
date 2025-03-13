@@ -586,3 +586,111 @@ describe("PATCH /api/comments/:commentId", () => {
       });
   });
 });
+
+
+
+describe("POST /api/articles", () => {
+  test("201: Responds with an object of the posted comment", () => {
+    const articleRequest = {
+      author: "icellusedkars",
+      title: "test article",
+      body: "I love making things out of paper",
+      topic: "paper",
+      article_img_url: "test"
+    };
+
+    return request(app)
+      .post("/api/articles")
+      .send(articleRequest)
+      .expect(201)
+      .then(({ body }) => {
+        const currentTime = new Date();
+        const tolerance = 20;
+
+        const article = body.article;
+        const createdAt = new Date(article.created_at);
+
+        expect(article.author).toBe("icellusedkars");
+        expect(article.title).toBe("test article")
+        expect(article.body).toBe("I love making things out of paper");
+        expect(article.topic).toBe("paper")
+        expect(article.article_img_url).toBe("test")
+        expect(article.article_id).toBe(14)
+        expect(article.votes).toBe(0);
+        expect(article.comment_count).toBe(0)
+
+        expect(Math.abs(currentTime - createdAt)).toBeLessThanOrEqual(
+          tolerance
+        );
+      });
+  });
+
+  test("201: Responds with an object of the posted comment and a default article_img_url when none is provided", () => {
+    const articleRequest = {
+      author: "icellusedkars",
+      title: "test article",
+      body: "I love making things out of paper",
+      topic: "paper",
+    };
+
+    return request(app)
+      .post("/api/articles")
+      .send(articleRequest)
+      .expect(201)
+      .then(({ body }) => {
+        const currentTime = new Date();
+        const tolerance = 20;
+
+        const article = body.article;
+        const createdAt = new Date(article.created_at);
+
+        expect(article.author).toBe("icellusedkars");
+        expect(article.title).toBe("test article")
+        expect(article.body).toBe("I love making things out of paper");
+        expect(article.topic).toBe("paper")
+        expect(article.article_img_url).toBe("https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700")
+        expect(article.article_id).toBe(14)
+        expect(article.votes).toBe(0);
+        expect(article.comment_count).toBe(0)
+
+        expect(Math.abs(currentTime - createdAt)).toBeLessThanOrEqual(
+          tolerance
+        );
+      });
+  });
+
+  test("400: Responds with bad request when a username is used that does not belong to an existing user", () => {
+    const articleRequest = {
+      author: "test123",
+      title: "test article",
+      body: "I love making things out of paper",
+      topic: "paper",
+    };
+    return request(app)
+      .post("/api/articles")
+      .send(articleRequest)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Not found");
+      });
+  });
+
+
+
+  test("400: Responds with bad request when an invalid request is made to a valid endpoint", () => {
+    const articleRequest = {
+      author: "icellusedkars",
+      title: null,
+      body: "I love making things out of paper",
+      topic: "paper",
+    };;
+    return request(app)
+      .post("/api/articles")
+      .send(articleRequest)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+  });
+
+});

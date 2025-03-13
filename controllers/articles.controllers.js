@@ -4,6 +4,7 @@ const {
   fetchCommentsByArticleId,
   insertComment,
   updateArticleVotes,
+  insertArticle
 } = require("../models/articles.models");
 
 const { checkExists } = require("../db/seeds/utils");
@@ -76,10 +77,33 @@ function patchArticleVotes(request, response, next) {
     });
 }
 
+
+function postArticle(request, response, next){
+
+const {author,
+  title,
+  body,
+  topic,
+  article_img_url} = request.body
+
+  insertArticle(author,
+    title,
+    body,
+    topic,
+    article_img_url)
+  .then((article) => {
+    response.status(201).send({ article: article });
+  })
+  .catch((error) => {
+    next(error);
+  });
+}
+
 module.exports = {
   getArticles,
   getArticleById,
   getCommentsByArticleId,
   postCommentOnArticle,
   patchArticleVotes,
+  postArticle
 };
