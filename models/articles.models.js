@@ -182,6 +182,18 @@ function insertArticle(
     });
 }
 
+function removeArticle(article_id){
+   
+    return db
+    .query(`DELETE FROM articles WHERE article_id = $1`, [article_id])
+    .then((response) => {
+        if (response.rowCount === 0) {
+          return Promise.reject({ status: 404, msg: "Not found" });
+        }
+      });
+      
+}
+
 module.exports = {
   fetchArticles,
   fetchArticleById,
@@ -189,4 +201,5 @@ module.exports = {
   insertComment,
   updateArticleVotes,
   insertArticle,
+  removeArticle
 };
