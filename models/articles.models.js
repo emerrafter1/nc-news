@@ -1,5 +1,6 @@
 const db = require("../db/connection");
 const { checkExists } = require("../db/seeds/utils");
+const format = require("pg-format");
 
 function fetchArticles(sort_by, order, topic) {
   const allowedSortBy = [
@@ -20,13 +21,13 @@ function fetchArticles(sort_by, order, topic) {
   FULL JOIN comments 
   ON comments.article_id = articles.article_id`;
 
-  const queryParams = []
+  const queryParams = [];
 
   //WHERE
 
   if (topic) {
     query += ` WHERE articles.topic = $1`;
-    queryParams.push(topic)
+    queryParams.push(topic);
   }
 
   //GROUP BY
@@ -134,10 +135,35 @@ function updateArticleVotes(inc_votes, articleId) {
   });
 }
 
+function insertArticle(
+  author,
+  title,
+  body,
+  topic,
+  article_img_url = "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+) {
+  const values = [author, title, body, topic, article_img_url];
+
+  const insertArticleQuery = format(
+    `INSERT INTO articles (author, title, body, topic, article_img_url) 
+       VALUES (%L) 
+       RETURNING *`,
+    values
+  );
+
+
+
+  return db.query(insertArticleQuery).then(({ rows }) => {
+    rows[0].comment_count = 0;
+    return rows[0];
+  });
+}
+
 module.exports = {
   fetchArticles,
   fetchArticleById,
   fetchCommentsByArticleId,
   insertComment,
   updateArticleVotes,
+  insertArticle,
 };
