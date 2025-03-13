@@ -10,9 +10,10 @@ const {
 const { checkExists } = require("../db/seeds/utils");
 
 function getArticles(request, response, next) {
-  const { sort_by, order, topic } = request.query;
+  const { sort_by, order, topic, page, limit } = request.query;
 
-  promises = [fetchArticles(sort_by, order, topic)];
+
+  promises = [fetchArticles(sort_by, order, topic, limit, page)];
 
   if (topic) {
     promises.push(checkExists("topics", "slug", topic));
