@@ -6,5 +6,17 @@ function fetchTopics() {
   });
 }
 
+function insertTopic(slug, description) {
+  const queryParams = [slug, description];
 
-module.exports = { fetchTopics };
+  return db
+    .query(
+      `INSERT INTO topics (slug, description) VALUES ($1, $2) RETURNING *`,
+      queryParams
+    )
+    .then(({ rows }) => {
+      return rows[0];
+    });
+}
+
+module.exports = { fetchTopics, insertTopic };
