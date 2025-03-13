@@ -1,6 +1,5 @@
 const db = require("../db/connection");
 const { checkExists } = require("../db/seeds/utils");
-const format = require("pg-format");
 
 function fetchArticles(sort_by, order, topic) {
   const allowedSortBy = [
@@ -135,28 +134,20 @@ function updateArticleVotes(inc_votes, articleId) {
   });
 }
 
-function insertArticle(
-  author,
-  title,
-  body,
-  topic,
-  article_img_url = "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
-) {
+function insertArticle(author, title, body, topic, article_img_url = "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700") {
   const values = [author, title, body, topic, article_img_url];
 
-  const insertArticleQuery = format(
-    `INSERT INTO articles (author, title, body, topic, article_img_url) 
-       VALUES (%L) 
-       RETURNING *`,
-    values
-  );
-
-
-
-  return db.query(insertArticleQuery).then(({ rows }) => {
-    rows[0].comment_count = 0;
-    return rows[0];
-  });
+  return db
+    .query(
+      `INSERT INTO articles (author, title, body, topic, article_img_url) 
+        VALUES ($1, $2, $3, $4 ,$5) 
+        RETURNING *`,
+      values
+    )
+    .then(({ rows }) => {
+      rows[0].comment_count = 0;
+      return rows[0];
+    });
 }
 
 module.exports = {
