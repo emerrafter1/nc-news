@@ -184,5 +184,21 @@
         "comment_count": 0
       }
     }
+  },
+
+  "POST /api/topics": {
+    "description": "creates a new topic",
+    "queries": [],
+    "body": {
+      "slug": "Art",
+      "description": "Painting is really fun"
+    },
+    "exampleResponse": {
+      "topic": {
+        "slug": "Art",
+        "description": "Painting is really fun",
+        "img_url": null
+      }
+    }
   }
 }
