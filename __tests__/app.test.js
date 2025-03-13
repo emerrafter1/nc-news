@@ -227,20 +227,6 @@ describe("GET /api/articles", () => {
       });
   });
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   test("200: Responds with an array of first 5 articles", () => {
     return request(app)
       .get("/api/articles?limit=5")
@@ -271,7 +257,6 @@ describe("GET /api/articles", () => {
       });
   });
 
-
   test("200: Responds with an array of all the articles on page 3", () => {
     return request(app)
       .get("/api/articles?page=2&limit=5")
@@ -300,17 +285,6 @@ describe("GET /api/articles", () => {
       .then(({ body }) => {
         const articles = body.articles;
         expect(articles.length).toBe(0);
-        expect(articles).toBeSorted("created_at", { descending: true });
-        articles.forEach((article) => {
-          expect(typeof article.author).toBe("string");
-          expect(typeof article.title).toBe("string");
-          expect(typeof article.article_id).toBe("number");
-          expect(typeof article.topic).toBe("string");
-          expect(typeof article.created_at).toBe("string");
-          expect(typeof article.votes).toBe("number");
-          expect(typeof article.article_img_url).toBe("string");
-          expect(typeof article.comment_count).toBe("number");
-        });
       });
   });
 
@@ -322,13 +296,6 @@ describe("GET /api/articles", () => {
         expect(body.msg).toBe("Bad request");
       });
   });
-
-
-
-
-
-
-
 });
 
 describe("GET /api/articles/:article_id/comments", () => {
@@ -375,6 +342,71 @@ describe("GET /api/articles/:article_id/comments", () => {
       .expect(404)
       .then(({ body }) => {
         expect(body.msg).toBe("Not found");
+      });
+  });
+
+  test("200: Responds with an array of 5 comments", () => {
+    return request(app)
+      .get("/api/articles/1/comments?limit=5")
+      .expect(200)
+      .then(({ body }) => {
+        const comments = body.comments;
+        expect(comments.length).toBe(5);
+        comments.forEach((comment) => {
+          expect(typeof comment.comment_id).toBe("number");
+          expect(typeof comment.votes).toBe("number");
+          expect(typeof comment.created_at).toBe("string");
+          expect(typeof comment.author).toBe("string");
+          expect(typeof comment.body).toBe("string");
+          expect(comment.article_id).toBe(1);
+        });
+      });
+  });
+
+  test("400: Responds with an 400 bad request when not provided a valid limit number", () => {
+    return request(app)
+      .get("/api/articles/1/comments?limit=cheese")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+  });
+
+  test("200: Responds with an array of all the comments on page 2", () => {
+    return request(app)
+      .get("/api/articles/1/comments?page=2&limit=4")
+      .expect(200)
+      .then(({ body }) => {
+        const comments = body.comments;
+        expect(comments.length).toBe(3);
+        expect(comments).toBeSorted("created_at", { descending: true });
+        comments.forEach((comment) => {
+          expect(typeof comment.comment_id).toBe("number");
+          expect(typeof comment.votes).toBe("number");
+          expect(typeof comment.created_at).toBe("string");
+          expect(typeof comment.author).toBe("string");
+          expect(typeof comment.body).toBe("string");
+          expect(comment.article_id).toBe(1);
+        });
+      });
+  });
+
+  test("200: Responds with an array of all the comments on page 4", () => {
+    return request(app)
+      .get("/api/articles/1/comments?page=4&limit=4")
+      .expect(200)
+      .then(({ body }) => {
+        const comments = body.comments;
+        expect(comments.length).toBe(0);
+      });
+  })
+
+  test("Responds with a 400 when user provided an invalid page number", () => {
+    return request(app)
+      .get("/api/articles/1/comments?page=dog&limit=7")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
       });
   });
 });
@@ -690,8 +722,6 @@ describe("PATCH /api/comments/:commentId", () => {
   });
 });
 
-
-
 describe("POST /api/articles", () => {
   test("201: Responds with an object of the posted comment", () => {
     const articleRequest = {
@@ -699,7 +729,7 @@ describe("POST /api/articles", () => {
       title: "test article",
       body: "I love making things out of paper",
       topic: "paper",
-      article_img_url: "test"
+      article_img_url: "test",
     };
 
     return request(app)
@@ -714,13 +744,13 @@ describe("POST /api/articles", () => {
         const createdAt = new Date(article.created_at);
 
         expect(article.author).toBe("icellusedkars");
-        expect(article.title).toBe("test article")
+        expect(article.title).toBe("test article");
         expect(article.body).toBe("I love making things out of paper");
-        expect(article.topic).toBe("paper")
-        expect(article.article_img_url).toBe("test")
-        expect(article.article_id).toBe(14)
+        expect(article.topic).toBe("paper");
+        expect(article.article_img_url).toBe("test");
+        expect(article.article_id).toBe(14);
         expect(article.votes).toBe(0);
-        expect(article.comment_count).toBe(0)
+        expect(article.comment_count).toBe(0);
 
         expect(Math.abs(currentTime - createdAt)).toBeLessThanOrEqual(
           tolerance
@@ -748,13 +778,15 @@ describe("POST /api/articles", () => {
         const createdAt = new Date(article.created_at);
 
         expect(article.author).toBe("icellusedkars");
-        expect(article.title).toBe("test article")
+        expect(article.title).toBe("test article");
         expect(article.body).toBe("I love making things out of paper");
-        expect(article.topic).toBe("paper")
-        expect(article.article_img_url).toBe("https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700")
-        expect(article.article_id).toBe(14)
+        expect(article.topic).toBe("paper");
+        expect(article.article_img_url).toBe(
+          "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+        );
+        expect(article.article_id).toBe(14);
         expect(article.votes).toBe(0);
-        expect(article.comment_count).toBe(0)
+        expect(article.comment_count).toBe(0);
 
         expect(Math.abs(currentTime - createdAt)).toBeLessThanOrEqual(
           tolerance
@@ -778,15 +810,13 @@ describe("POST /api/articles", () => {
       });
   });
 
-
-
   test("400: Responds with bad request when an invalid request is made to a valid endpoint", () => {
     const articleRequest = {
       author: "icellusedkars",
       title: null,
       body: "I love making things out of paper",
       topic: "paper",
-    };;
+    };
     return request(app)
       .post("/api/articles")
       .send(articleRequest)
@@ -795,5 +825,4 @@ describe("POST /api/articles", () => {
         expect(body.msg).toBe("Bad request");
       });
   });
-
 });
