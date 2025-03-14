@@ -131,7 +131,7 @@ function insertComment(articleId, body, username) {
 
   return db
     .query(
-      `INSERT INTO comments (article_id, body, author) VALUES($1, $2, $3) RETURNING *`,
+      `INSERT INTO comments (article_id, body, author) VALUES($1, $2, $3) RETURNING *, created_at::text AS created_at `,
       values
     )
     .then(({ rows }) => {
@@ -176,7 +176,7 @@ function insertArticle(
     .query(
       `INSERT INTO articles (author, title, body, topic, article_img_url) 
         VALUES ($1, $2, $3, $4 ,$5) 
-        RETURNING *`,
+        RETURNING *, created_at::text AS created_at `,
       values
     )
     .then(({ rows }) => {
