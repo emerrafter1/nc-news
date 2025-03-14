@@ -18,6 +18,9 @@ jobs:
           postgresql db: 'my_db'
           postgresql user: 'test_user'
           postgresql password: 'test_password'
+          
+      - name: Set timezone to GMT
+        run: echo "TZ=GMT" >> $GITHUB_ENV
 
       - name: Install dependencies
         run: npm ci
