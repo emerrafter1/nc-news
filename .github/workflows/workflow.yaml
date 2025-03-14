@@ -30,7 +30,8 @@ jobs:
     needs: test # wait until test is successful before running this job
     steps:
       - name: Deploy to Render
-        run: curl $\{{ secrets.RENDER_DEPLOY_HOOK_URL }}
+        run: curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK_URL }}"
+
 
     
           
