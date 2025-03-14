@@ -76,7 +76,7 @@ function fetchArticles(sort_by, order, topic, limit, page) {
 function fetchArticleById(articleId) {
   return db
     .query(
-      `SELECT articles.author, articles.title, articles.article_id, articles.body, articles.topic, articles.created_at, articles.votes, articles.article_img_url, CAST(COUNT(comments.comment_id) AS INT) AS comment_count
+      `SELECT articles.author, articles.title, articles.article_id, articles.body, articles.topic, articles.created_at::text AS created_at, articles.votes, articles.article_img_url, CAST(COUNT(comments.comment_id) AS INT) AS comment_count
       FROM articles
       FULL JOIN comments
       ON comments.article_id = articles.article_id
@@ -148,7 +148,10 @@ function updateArticleVotes(inc_votes, articleId) {
     }
     return db
       .query(
-        `UPDATE articles SET votes = votes + $1 WHERE article_id = $2 RETURNING *`,
+        `UPDATE articles SET votes = votes + $1 WHERE article_id = $2 RETURNING *, created_at::text AS created_at, 
+    (SELECT CAST(COUNT(comments.comment_id) AS INT) 
+     FROM comments 
+     WHERE comments.article_id = articles.article_id) AS comment_count;`,
         values
       )
       .then(({ rows }) => {
@@ -182,16 +185,14 @@ function insertArticle(
     });
 }
 
-function removeArticle(article_id){
-   
-    return db
+function removeArticle(article_id) {
+  return db
     .query(`DELETE FROM articles WHERE article_id = $1`, [article_id])
     .then((response) => {
-        if (response.rowCount === 0) {
-          return Promise.reject({ status: 404, msg: "Not found" });
-        }
-      });
-      
+      if (response.rowCount === 0) {
+        return Promise.reject({ status: 404, msg: "Not found" });
+      }
+    });
 }
 
 module.exports = {
@@ -201,5 +202,5 @@ module.exports = {
   insertComment,
   updateArticleVotes,
   insertArticle,
-  removeArticle
+  removeArticle,
 };
