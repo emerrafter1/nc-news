@@ -18,9 +18,14 @@ jobs:
           postgresql db: 'my_db'
           postgresql user: 'test_user'
           postgresql password: 'test_password'
-          
+
       - name: Set timezone to GMT
-        run: echo "TZ=GMT" >> $GITHUB_ENV
+        uses: szenius/set-timezone@v2.0
+        with:
+          timezoneLinux: "Etc/GMT"
+          timezoneMacos: "Etc/GMT"
+          timezoneWindows: "GMT Standard Time"
+
 
       - name: Install dependencies
         run: npm ci
