@@ -20,7 +20,7 @@
           "title": "Seafood substitutions are increasing",
           "article_id": 7,
           "topic": "cooking",
-          "created_at": "2018-05-30T15:59:13.341Z",
+          "created_at": "2020-01-07 14:08:00",
           "votes": 0,
           "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
           "comment_count": 6
@@ -39,7 +39,7 @@
         "article_id": 7,
         "body": "I was hungry.",
         "topic": "mitch",
-        "created_at": "2020-01-07T14:08:00.000Z",
+        "created_at": "2020-01-07 14:08:00",
         "votes": 0,
         "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
         "comment_count": 4
@@ -55,7 +55,7 @@
         {
           "comment_id": 1,
           "votes": 16,
-          "created_at": "2020-04-06T12:17:00.000Z",
+          "created_at": "2020-01-07 14:08:00",
           "author": "butter_bridge",
           "body": "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
           "article_id": 9
@@ -63,7 +63,7 @@
         {
           "comment_id": 17,
           "votes": 20,
-          "created_at": "2020-03-14T17:02:00.000Z",
+          "created_at": "2020-01-07 14:08:00",
           "author": "icellusedkars",
           "body": "The owls are not what they seem.",
           "article_id": 9
@@ -86,7 +86,7 @@
         "body": "I loved learning about this",
         "votes": 0,
         "author": "icellusedkars",
-        "created_at": "2025-03-11T10:56:33.864Z"
+        "created_at": "2020-01-07 14:08:00"
       }
     }
   },
@@ -103,7 +103,7 @@
         "article_id": 7,
         "body": "I was hungry.",
         "topic": "mitch",
-        "created_at": "2020-01-07T14:08:00.000Z",
+        "created_at": "2020-01-07 14:08:00",
         "votes": 20,
         "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
         "comment_count": 3
@@ -156,7 +156,7 @@
         "body": "The beautiful thing about treasure is that it exists. Got to find out what kind of sheets these are; not cotton, not rayon, silky.",
         "votes": 24,
         "author": "butter_bridge",
-        "created_at": "2020-10-31T03:03:00.000Z"
+        "created_at": "2020-01-07 14:08:00"
       }
     }
   },
@@ -178,7 +178,7 @@
         "topic": "paper",
         "author": "icellusedkars",
         "body": "I love making things out of paper",
-        "created_at": "2025-03-13T10:56:21.635Z",
+        "created_at": "2020-01-07 14:08:00",
         "votes": 0,
         "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
         "comment_count": 0
