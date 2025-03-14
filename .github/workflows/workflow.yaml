@@ -19,11 +19,6 @@ jobs:
           postgresql user: 'test_user'
           postgresql password: 'test_password'
 
-      - name: Set PostgreSQL timezone to UTC
-        run: psql -U test_user -d my_db -c "SET TIMEZONE = 'UTC';"
-
-
-
       - name: Install dependencies
         run: npm ci
 
