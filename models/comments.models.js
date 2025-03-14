@@ -16,7 +16,7 @@ function updateCommentVotes(inc_votes, commentId) {
 
   return db
     .query(
-      `UPDATE comments SET votes = votes + $1 WHERE comment_id = $2 RETURNING *`,
+      `UPDATE comments SET votes = votes + $1 WHERE comment_id = $2 RETURNING *, created_at::text AS created_at`,
       values
     )
     .then(({ rows }) => {
