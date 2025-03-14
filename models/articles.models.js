@@ -15,7 +15,7 @@ function fetchArticles(sort_by, order, topic, limit, page) {
 
   const allowedOrder = ["ASC", "DESC"];
 
-  let query = `SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, CAST(COUNT(comments.comment_id) AS INT) AS comment_count 
+  let query = `SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at::text AS created_at, articles.votes, articles.article_img_url, CAST(COUNT(comments.comment_id) AS INT) AS comment_count 
   FROM articles 
   FULL JOIN comments 
   ON comments.article_id = articles.article_id`;
@@ -93,7 +93,7 @@ function fetchArticleById(articleId) {
 }
 
 function fetchCommentsByArticleId(article_id, page, limit) {
-  let query = `SELECT comment_id, votes, created_at, author, body, article_id FROM comments where article_id = $1 ORDER BY created_at DESC`;
+  let query = `SELECT comment_id, votes, created_at::text AS created_at, author, body, article_id FROM comments where article_id = $1 ORDER BY created_at DESC`;
 
   let queryParams = [article_id];
   let queryParamCount = 2;
